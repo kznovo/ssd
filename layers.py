@@ -100,7 +100,7 @@ class DefaultBox(Layer):
         defboxes_tensor[:, :, :, 2] = defbox_wh[:, 0]
         defboxes_tensor[:, :, :, 3] = defbox_wh[:, 1]
         
-        # normalize, and add variances for encoding
+        # normalize, and add   for encoding
         # output: 
         defboxes_tensor[:, :, :, [0, 2]] /= self.img_width
         defboxes_tensor[:, :, :, [1, 3]] /= self.img_height

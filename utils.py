@@ -58,25 +58,38 @@ def compute_iou(box, boxes):
     return iou
 
 
-def decode(y_pred):
-    '''decode y_pred for inference
-        # input: y_pred of shape (n_batch, #class, #defboxes, 8)
-        # output: y_pred_decoded of shape
-            array([[class_id, confidence, xmin, ymin, xmax, ymax], ... ])
+
+class BBoxUtils(object):
+    '''Bouding box utils class for SSD.
+        # Encode data for training: Typically used within the generator class.
+                                    Input-data is delta-encoded coordinates based on default_box 
+                                    coordinates relative to the ground-truth bounding box coordinates.
+                                    defaultbox function calculates default box coordinates and match them
+                                    to the ground-truth coordinates,
+        # Decode data for inference
+
+        1. Initiate with feature map configurations.
+        2. To encode, input image file path and coordinate data
     '''
-    compute_iou
-    nms = tf.image.non_max_suppression(
-    return
-
-
-
-
-
-def encode():
+        
+        
+    def __init__(self,
+                 fmap):
+        self.fmap = fmap
+        
+    def encode(self, gtboxes):
+        '''use self.fmap and match gtboxes with default boxes,
+            and calculate delta encoded values.
+            Only the assigned default boxes should have the values.
+            Use iou.
+        '''
+        
+        pass
     
-
-
-
-    
-    
-    
+    def decode(self, y_pred):
+        '''use self.fmap and match y_pred boxes with default boxes,
+            and reverse encode the delta encoded values.
+            Whilst doing so, greedy nms is done.
+        '''
+        pass
+        
