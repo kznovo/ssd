@@ -37,7 +37,7 @@ def SSD(input_shape,
     T['conv4_1'] = Conv2D(512, 3, name='conv4_1', **same_args)(T['pool3'])
     T['conv4_2'] = Conv2D(512, 3, name='conv4_2', **same_args)(T['conv4_1'])
     T['conv4_3'] = Conv2D(512, 3, name='conv4_3', **same_args)(T['conv4_2'])
-    T['conv4_3_norm'] = L2Normalize(20, name='conv4_3_norm')(T['conv4_2']) #conv4_3_norm 38x38
+    T['conv4_3_norm'] = L2Normalize(20, name='conv4_3_norm')(T['conv4_3']) #conv4_3_norm 38x38
     T['pool4'] = MaxPooling2D(2, 2, name='pool4', **pool_args)(T['conv4_3'])
     T['conv5_1'] = Conv2D(512, 3, name='conv5_1', **same_args)(T['pool4'])
     T['conv5_2'] = Conv2D(512, 3, name='conv5_2', **same_args)(T['conv5_1'])
@@ -57,14 +57,16 @@ def SSD(input_shape,
     for i,x in enumerate(fmap):
         loc = x + '_mbox_loc'
         conf = x + '_mbox_conf'
+        defb = x + '_mbox_defbox'
         T[loc] = Conv2D((len(fmap[x]) + 1) * 4, 3, name=loc, **score_args)(T[x])
         T[conf] = Conv2D((len(fmap[x]) + 1) * num_classes, 3, name=conf, **score_args)(T[x])
         T[loc+'_reshape'] = Reshape((-1, 4), name=loc+'_reshape')(T[loc])
         T[conf+'_reshape'] = Reshape((-1, num_classes), name=conf+'_reshape')(T[conf])
         
+        
     T['mbox_loc'] = Concatenate(axis=1, name='mbox_loc')([T[x + '_mbox_loc_reshape'] for x in fmap])
     T['mbox_conf'] = Concatenate(axis=1)([T[x + '_mbox_conf_reshape'] for x in fmap])
     T['mbox_conf'] = Activation('softmax', name='mbox_conf')(T['mbox_conf'])
-    T['predictions_ssd'] = Concatenate(axis=2, name='predictions_ssd')([T['mbox_loc'], T['mbox_conf']])
+    T['predictions_ssd'] = Concatenate(axis=2, name='predictions_ssd')([T['mbox_conf'],T['mbox_loc']])
     model = Model(T['data'],T['predictions_ssd'])
     return model
